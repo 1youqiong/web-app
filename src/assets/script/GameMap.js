@@ -3,7 +3,7 @@ import { Snake } from "./Snake";
 import { Wall } from "./Wall";
 
 export class GameMap extends AcGameObject {
-    constructor(ctx, parent) {
+    constructor(ctx, parent,store) {
         super();
 
         this.ctx = ctx;
@@ -11,6 +11,7 @@ export class GameMap extends AcGameObject {
         this.L = 0;
         this.rows = 13;
         this.cols = 14;
+        this.store=store;
 
         this.inner_wall_count = 20;
 
@@ -23,58 +24,60 @@ export class GameMap extends AcGameObject {
     }
 
 
-    check_connectivity(g,sx,sy,tx,ty){
-        if(sx==tx && sy==ty) return true;
-        g[sx][sy]=true;
+    // check_connectivity(g,sx,sy,tx,ty){
+    //     if(sx==tx && sy==ty) return true;
+    //     g[sx][sy]=true;
 
-        let dx=[-1,0,1,0],dy=[0,1,0,-1];
-        for(let i=0;i<4;i++){
-            let x=sx+dx[i],y=sy+dy[i];
-            // if(x<0 || x>this.cols-1 || y<0 || y>this.rows-1) continue;
-            if(!g[x][y] && this.check_connectivity(g,x,y,tx,ty))
-                return true;
-        }
-        return false;
-    }
+    //     let dx=[-1,0,1,0],dy=[0,1,0,-1];
+    //     for(let i=0;i<4;i++){
+    //         let x=sx+dx[i],y=sy+dy[i];
+    //         // if(x<0 || x>this.cols-1 || y<0 || y>this.rows-1) continue;
+    //         if(!g[x][y] && this.check_connectivity(g,x,y,tx,ty))
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
     create_walls() {
-        const g = [];
+        // const g = [];
+        // for (let r = 0; r < this.rows; r++) {
+        //     g[r] = [];
+        //     for (let c = 0; c < this.cols; c++) {
+        //         g[r][c] = false;
+        //     }
+        // }
+
+        // //给四周加上墙
+        // for (let r = 0; r < this.rows; r++) {
+        //     g[r][0] = g[r][this.cols - 1] = true;
+        // }
+
+        // for (let c = 0; c < this.cols; c++) {
+        //     g[0][c] = g[this.rows - 1][c] = true;
+        // }
+
+        // //随机生成障碍物
+        // for (let i = 0; i < this.inner_wall_count / 2; i++) {
+        //     for (let j = 0; j < 1000; j++) {
+        //         const r = parseInt(Math.random() * this.rows);
+        //         const c = parseInt(Math.random() * this.cols);
+        //         if (g[r][c] || g[this.rows-1-r][this.cols-1-c]) continue;
+        //         if(r==this.rows-2 && c==1 || r==1 && c==this.cols-2) continue;
+        //         g[r][c]=g[this.rows-1-r][this.cols-1-c]=true;
+        //         break;
+        //     }
+
+        // }
+
+        // const copy_g=JSON.parse(JSON.stringify(g));
+        // if(!this.check_connectivity(copy_g,this.rows-2,1,1,this.cols-2))
+        //     return false;
+
+        const g=this.store.state.pk.gamemap;
+
         for (let r = 0; r < this.rows; r++) {
-            g[r] = [];
             for (let c = 0; c < this.cols; c++) {
-                g[r][c] = false;
-            }
-        }
-
-        //给四周加上墙
-        for (let r = 0; r < this.rows; r++) {
-            g[r][0] = g[r][this.cols - 1] = true;
-        }
-
-        for (let c = 0; c < this.cols; c++) {
-            g[0][c] = g[this.rows - 1][c] = true;
-        }
-
-        //随机生成障碍物
-        for (let i = 0; i < this.inner_wall_count / 2; i++) {
-            for (let j = 0; j < 1000; j++) {
-                const r = parseInt(Math.random() * this.rows);
-                const c = parseInt(Math.random() * this.cols);
-                if (g[r][c]=g[this.rows-1-r][this.cols-1-c]) continue;
-                if(r==this.rows-2 && c==1 || r==1 && c==this.cols-2) continue;
-                g[r][c]=g[this.rows-1-r][this.cols-1-c]=true;
-                break;
-            }
-
-        }
-
-        const copy_g=JSON.parse(JSON.stringify(g));
-        if(!this.check_connectivity(copy_g,this.rows-2,1,1,this.cols-2))
-            return false;
-
-        for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-                if (g[r][c]) {
+                if (g[r][c]===1) {
                     this.walls.push(new Wall(r, c, this));
                 }
             }
@@ -86,26 +89,35 @@ export class GameMap extends AcGameObject {
         this.ctx.canvas.focus();
 
         const [snake0,snake1]=this.snakes;
-        const Arrowkeys=["ArrowUp","ArrowRight","ArrowDown","ArrowLeft"];
+        // const Arrowkeys=["ArrowUp","ArrowRight","ArrowDown","ArrowLeft"];
 
         this.ctx.canvas.addEventListener("keydown",e =>{
-            if(Arrowkeys.includes(e.key)) e.preventDefault();
-            if(e.key==="w") snake0.set_direction(0);
-            else if(e.key==="d") snake0.set_direction(1);
-            else if(e.key==="s") snake0.set_direction(2);
-            else if(e.key==="a") snake0.set_direction(3);
-            else if(e.key==="ArrowUp") snake1.set_direction(0);
-            else if(e.key==="ArrowRight") snake1.set_direction(1);
-            else if(e.key==="ArrowDown") snake1.set_direction(2);
-            else if(e.key==="ArrowLeft") snake1.set_direction(3);
+            // if(Arrowkeys.includes(e.key)) e.preventDefault();
+            // if(e.key==="w") snake0.set_direction(0);
+            // else if(e.key==="d") snake0.set_direction(1);
+            // else if(e.key==="s") snake0.set_direction(2);
+            // else if(e.key==="a") snake0.set_direction(3);
+            // else if(e.key==="ArrowUp") snake1.set_direction(0);
+            // else if(e.key==="ArrowRight") snake1.set_direction(1);
+            // else if(e.key==="ArrowDown") snake1.set_direction(2);
+            // else if(e.key==="ArrowLeft") snake1.set_direction(3);
+            let d=-1;
+            if(e.key==="w") d=0;
+            else if(e.key==="d") d=1;
+            else if(e.key==="s") d=2;
+            else if(e.key==="a") d=3;
+
+            if(d>=0){
+                this.store.state.pk.socket.send(JSON.stringify({
+                    event:"move",
+                    direction:d,
+                }));
+            }
         });
     }
 
     start() {
-        for(let i=0;i<1000;i++){
-            if(this.create_walls()) break;
-        }
-
+        this.create_walls();
         this.add_listening_events();
     }
 

@@ -24,7 +24,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            {{store.state.user.username}}
+                            {{$store.state.user.username}}
                         </a>
                         <ul class="dropdown-menu">
                             <li><router-link class="dropdown-item" :to="{ name: 'userbot_index' }">我的bot</router-link></li>
@@ -35,7 +35,7 @@
                         </ul>
                     </li>
                 </ul>
-                <ul class="navbar-nav" v-else>
+                <ul class="navbar-nav" v-else-if="!$store.state.user.pulling_info">
                     <li class="nav-item">
                         <router-link class="nav-link" :to="{name:'user_account_login'}" role="button">
                             登录
